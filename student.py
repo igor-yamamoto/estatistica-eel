@@ -7,11 +7,13 @@ def creat_map():
     return head_map, index_map
 
 def import_student_table():
-    file_t = '../distr/Student.dat'
+    file_t = 'distr/Student.dat'
     student = pd.read_csv(file_t)
     return student
 
-def find_t(student, conf, n, interval = 'bilateral'):
+def find_t(conf, n, interval = 'bilateral'):
+    student = import_student_table()
+
     from norm import find_idx
     alp = 1 - conf
     hd_map, index_map = creat_map()
@@ -22,7 +24,7 @@ def find_t(student, conf, n, interval = 'bilateral'):
         p = 2*alp
 
     idx_p = find_idx(hd_map, p)
-    idx_i = find_idx(index_map, n-1)
+    idx_i = find_idx(index_map, n)
     t = student.iloc[idx_i, [idx_p+1]].values[0]
 
     return t

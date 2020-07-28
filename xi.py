@@ -7,7 +7,7 @@ def xi_create_map():
     return head_map, index_map
 
 def import_xi_table():
-    file_xi = '../distr/Xi.dat'
+    file_xi = 'distr/Xi.dat'
     xi = pd.read_csv(file_xi)
     return xi
 
@@ -18,7 +18,7 @@ def find_q(conf, n, interval = 'bilateral'):
     alp = 1 - conf
 
     head_map, index_map = xi_create_map()
-    idx_i = find_idx(index_map, n-1)
+    idx_i = find_idx(index_map, n)
 
     if interval == 'bilateral':
         alp_meio = alp/2
@@ -26,21 +26,21 @@ def find_q(conf, n, interval = 'bilateral'):
         idx_q_1 = find_idx(head_map, p1)
         idx_q_2 = find_idx(head_map, p2)
 
-        q1 = xi.iloc[idx_i, [idx_q_1+1]].values[0]
-        q2 = xi.iloc[idx_i, [idx_q_2+1]].values[0]
+        q1 = xi.iloc[idx_i, [idx_q_1]].values[0]
+        q2 = xi.iloc[idx_i, [idx_q_2]].values[0]
 
         q = (q1, q2)
     elif interval == 'unilateral inferior':
         p = 1 - alp
         idx_q = find_idx(head_map, p)
 
-        q = xi.iloc[idx_i, [idx_q+1]].values[0]
+        q = xi.iloc[idx_i, [idx_q]].values[0]
         q = (0, q)
     elif interval == 'unilateral superior':
         p = alp
         idx_q = find_idx(head_map, p)
 
-        q = xi.iloc[idx_i, [idx_q+1]].values[0]
+        q = xi.iloc[idx_i, [idx_q]].values[0]
         q = (q, 'infty')
 
     return q
