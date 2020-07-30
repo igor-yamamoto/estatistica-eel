@@ -21,6 +21,8 @@ def tabela_ANOVA_raw(X, Y):
     PT1 = (vals[1, :]*vals[2, :]).sum()
     PT2 = (Y**2).sum()
     PT3 = len(Y)*(Y.mean())**2
+    print(PT1, PT2, PT3)
+    print(Y.mean())
 
     SQEn, SQDen, SQTot = PT1 - PT3, PT2 - PT1, PT2 - PT3
     QMEn, QMDen, QMTot = SQEn/(k-1), SQDen/(n-k), SQTot/(n-1)
@@ -30,7 +32,8 @@ def tabela_ANOVA_raw(X, Y):
     SQ = [SQEn, SQDen, SQTot]
     QM = [QMEn, QMDen, QMTot]
 
-    print_ANOVA(n, k, SQ)
+    out = print_ANOVA(n, k, SQ)
+    return out
 
 def tabela_ANOVA_from_table(table):
     ni, k = table.shape
@@ -47,8 +50,8 @@ def tabela_ANOVA_from_table(table):
     SQEn, SQDen, SQTot = PT1-PT3, PT2-PT1, PT2-PT3
     SQ = [SQEn, SQDen, SQTot]
 
-    print_ANOVA(n, k, SQ)
-
+    out = print_ANOVA(n, k, SQ)
+    return out
 
 def print_ANOVA(n, k, SQ):
 
@@ -56,7 +59,16 @@ def print_ANOVA(n, k, SQ):
     QM = [QMEn, QMDen, QMTot]
 
     F = QMEn/QMDen
-
+    F = [F, F, F]
+    
+    out = pd.DataFrame({'n': [k-1, n-k, n-1],
+                        'SQ': SQ,
+                       'QM': QM,
+                       'F': F},
+                      index = ['Entre', 'Dentro', 'Total'])
+    return out
+    
+"""
     print("-------------------------------")
     print("TABELA ANOVA")
     print("-------------------------------")
@@ -64,7 +76,7 @@ def print_ANOVA(n, k, SQ):
     print("Entre: " + str(k-1) + " / " + str(SQ[0]) + " / " + str(QM[0]) + " / " + str(F))
     print("Dentro: " + str(n-k) + " / " + str(SQ[1]) + " / " + str(QM[1]))
     print("Total: " + str(n-1) + " / " + str(SQ[2]) + " / " + str(QM[2]))
-
+"""
 
 def alpha_beta(data, args):
     n = data.shape[0]
@@ -75,8 +87,8 @@ def alpha_beta(data, args):
     x_mean = data[x].mean()
     y_mean = data[y].mean()
 
-    xy = (table[x]*table[y]).sum()
-    x2 = (table[x]**2).sum()
+    xy = (data[x]*data[y]).sum()
+    x2 = (data[x]**2).sum()
     
     beta_ch = ((n*x_mean*y_mean)-xy)/(n*x_mean**2-x2)
     alpha_ch = y_mean - beta_ch*x_mean
@@ -90,7 +102,7 @@ def ANOVA_regr(data, args):
     x_mean = data[x].mean()
     y_mean = data[y].mean()
     
-    alpha_ch, beta_ch = alpha_beta(table, args)
+    alpha_ch, beta_ch = alpha_beta(data, args)
     y_ch = alpha_ch + data[x]*beta_ch
     
     SQTot = ((data[y]-y_mean)**2).sum()
